@@ -37,6 +37,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'tictactoe',
+    'main',
+    'user_profile',
 )
 
 MIDDLEWARE_CLASSES = (
