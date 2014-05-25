@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Please login</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
   {% if form.errors %}
     <p class="text-warning">Your username and password didn't match. Please do something.</p>
   {% endif %}
@@ -12,6 +9,5 @@
     {{ form }}
     <input class="btn btn-primary" type="submit" value="Login">
     <input type="hidden" name="next" value="{{ next }}">
-  </form>  
-</body>
-</html>
+  </form>
+{% endblock content %}
