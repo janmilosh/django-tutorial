@@ -1,16 +1,15 @@
 {% extends "base.html" %}
 
+{% block title %}
+  Overview for {{ user.username }}
+{% endblock title %}
+
+{# TODO check empty for all lists #}
+
 {% block content %}
-  <div class="jumbotron">
-    {% if user.is_authenticated %}
-      <p>Hi, {{ user.username }}!</p>
-      <p>You are now logged-in!</p>
-    {% else %} 
-      <p>Welcome to the Django fundamentals course. 
-        This site was made with <a href="https://djangoproject.com/">Django</a> to show you how it's done. Enjoy!</p>
-      <p style="margin-top: 1em">
-        <a href="{% url 'boardgames_login' %}">Click here to login</a> or <a href="{% url 'boardgames_logout' %}">Sign up!</a>
-      </p>
-    {% endif %}
+  <div class="well col-md-6">
+    {% include "tictactoe/game_list_snippet.html" with header="Games waiting for your move" games_list=waiting_games%}
+    {% include "tictactoe/game_list_snippet.html" with header="Other active games" games_list=other_games%}
+    {% include "tictactoe/game_list_snippet.html" with header="Finished games" games_list=finished_games%}
   </div>
 {% endblock content %}
