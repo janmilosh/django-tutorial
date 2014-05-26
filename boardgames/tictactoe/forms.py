@@ -6,3 +6,4 @@ from tictactoe.models import Invitation
 class InvitationForm(ModelForm):
     class Meta:
         model = Invitation
+        exclude = ['from_user']
