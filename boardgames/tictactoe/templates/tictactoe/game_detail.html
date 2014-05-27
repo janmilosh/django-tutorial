@@ -1,0 +1,35 @@
+{% exends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}
+  Tictactoe game: {{ game.first_player }} vs. {{ game.second_player }}
+{% block title %}
+
+{% block styling %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
+  <style type="text/css">
+    .tictoe-cell {
+      background-color: #debb27;
+    }
+    #last-move {
+      background-color: #DF6E1E;
+    }
+  </style>
+{% endblock styling %}
+
+{% block content %}
+  <h3>Game: {{ game }}</h3>
+  <div class="col-sm-9">
+    <table class="table table-bordered" style="width: 60px; border-width: 2px;"></table>
+      {% for line in game.as_board %}
+        <tr>
+          {% for square in line %}
+            <td class="tictactoe-cell">
+              {{ square }}
+            </td> 
+        </tr> 
+      {% endfor %} 
+    </table>
+  </div>
+{% block content %}

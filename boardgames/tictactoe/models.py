@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Q
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
 # Create your models here.
 GAME_STATUS_CHOICES = (
@@ -10,11 +11,21 @@ GAME_STATUS_CHOICES = (
     ('D', 'Draw')
 )
 
+FIRST_PLAYER_MOVE = 'X'
+SECOND_PLAYER_MOVE = 'Y'
+BOARD_SIZE = 3
+
 class GamesManager(models.Manager):
     def games_for_user(self, user):
         """Return a queryset of games that this user participates in"""
         return super(GamesManager, self).get_queryset().filter(
             Q(first_player_id=user.id)|Q(second_player_id=user.id))
+
+    def new_game(self, invitation):
+        game = Game(first_player=invitation.to_user,
+                    second_player=invitation.from_user,
+                    next_to_move=invitation.to_user)
+        return game
 
 
 class Game(models.Model):
@@ -27,6 +38,27 @@ class Game(models.Model):
                               choices=GAME_STATUS_CHOICES)
     objects = GamesManager()
 
+    def as_board(self):
+        """Return a representation of the game board as a two-dimensional list,
+        so you can ask for the state of a square at position [y][x].
+
+        It will conatin a list of lines, where every line is a list of 
+        'X', 'O', or ''. For example, a 3x3 board position:
+
+        [['', 'X, ''],
+        ['O', '', ''],
+        ['X, '', '']]"""
+        board = [['' for x in range(BOARD_SIZE)] for y in range(BOARD_SIZE)]
+        for move in self.move_set.all():
+            board[move.y][move.x] = FIRST_PLAYER_MOVE if move.by_first_player else SECOND_PLAYER_MOVE
+        return board
+
+    def last_move(self):
+        return self.move_set.latest()
+
+    def get_absolute_url(self):
+        return reverse('tictactoe_game_detail', args=[self.id])
+
     def __str__(self):
         return "{0} vs {1}".format(self.first_player, self.second_player)
 
@@ -36,6 +68,14 @@ class Move(models.Model):
     y = models.IntegerField()
     comment = models.CharField(max_length=300)
     game = models.ForeignKey(Game)
+    by_first_player = models.BooleanField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        get_latest_by = 'timestamp'
+
+    def player(self):
+        return self.game.first_player if self.by_first_player else self.game.second_player
 
 
 class Invitation(models.Model):
